@@ -3,7 +3,8 @@ from typing import Tuple
 
 def lmsFunc(xn: np.ndarray, dn: np.ndarray, M: int, mu: float) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
-    LMS自适应滤波器
+    LMS 自适应滤波器（一个循环完成权重更新和输出计算）
+
     参数:
         xn : np.ndarray
             输入信号（加噪信号）
@@ -12,34 +13,39 @@ def lmsFunc(xn: np.ndarray, dn: np.ndarray, M: int, mu: float) -> Tuple[np.ndarr
         M : int
             滤波器阶数
         mu : float
-            步长因子（学习率）
+            步长（学习率）
+
     返回:
         yn : np.ndarray
             滤波输出信号
         W : np.ndarray
-            滤波器权重矩阵 (M x len(xn))
+            权重矩阵 (M x len(xn))
         en : np.ndarray
             误差信号
     """
-    N = len(xn)              
-    en = np.zeros((N, 1))    
-    W = np.zeros((M, N))     
-    for k in range(M, N):
-        if k == 20:
-            x = xn[k-1::-1]
+    N = len(xn)
+    en = np.zeros(N)
+    W = np.zeros((M, N))
+    yn = np.zeros(N)
+
+    for k in range(N):
+        # 构造输入向量（倒序最近 M 个样本，不够时补 0）
+        if k >= M:
+         x_vec = xn[k-M:k][::-1]
         else:
-            x = xn[k-1:k-M-1:-1]
-        try:
-            y = np.dot(W[:, k - 2], x)
-        except:
-            y = 0
-        en[k-1] = dn[k-1] - y
-        W[:, k-1] = W[:, k - 2] + 2 * mu * en[k-1] * x
-    yn = np.ones(xn.shape) * np.nan
-    for k in range(M, len(xn)):
-        if k == 20:
-            x = xn[k - 1::-1]
-        else:
-            x = xn[k - 1:k - M - 1:-1]
-        yn[k] = np.dot(W[:, -2], x)
+            x_vec = np.pad(xn[:k][::-1], (0, M-k), 'constant')
+
+        # 取上一时刻权重
+        prev_w = W[:, k-1] if k > 0 else np.zeros(M)
+
+        # 滤波输出
+        y = np.dot(prev_w, x_vec)
+        yn[k] = y
+
+        # 误差
+        en[k] = dn[k] - y
+
+        # 权重更新
+        W[:, k] = prev_w + 2 * mu * en[k] * x_vec
+
     return yn, W, en

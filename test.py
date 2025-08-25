@@ -20,14 +20,14 @@ if __name__ == '__main__':
     xs = xs_sin  # 原始信号
     # 加噪信号
     n = Noise()
-    ws = n.add_awgn_noise(xs, 20) 
+    # ws = n.add_awgn_noise(xs, 20) 
     # # 使用椒盐噪声
-    # ws = add_salt_pepper_noise(xs, noise_prob=0.1)  
+    ws = n.add_salt_pepper_noise(xs, noise_prob=0.1)  
     # 或使用均匀分布噪声
     #ws = n.add_uniform_noise(xs, amplitude=0.5)
-    M = 20
-    mu = 0.001
-    yn, W, en = lmsFunc(ws, xs, 20, 0.001)
+    M = 20  # 滤波器阶数
+    mu = 0.01  # 步长（学习率）
+    yn, W, en = lmsFunc(ws, xs, M, mu)
     # 绘图
     p = Plotter()
     p.plot_signals(t, xs, ws, yn, en)
