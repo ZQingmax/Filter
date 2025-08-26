@@ -1,7 +1,7 @@
 import numpy as np
 from typing import Tuple
 
-def lmsFunc(xn: np.ndarray, dn: np.ndarray, M: int, mu: float) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def lms(xn: np.ndarray, dn: np.ndarray, M: int, mu: float) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     LMS 自适应滤波器（一个循环完成权重更新和输出计算）
 
