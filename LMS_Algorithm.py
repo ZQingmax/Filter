@@ -31,7 +31,7 @@ def lms(xn: np.ndarray, dn: np.ndarray, M: int, mu: float) -> Tuple[np.ndarray, 
     for k in range(N):
         # 构造输入向量（倒序最近 M 个样本，不够时补 0）
         if k >= M:
-         x_vec = xn[k-M:k][::-1]
+            x_vec = xn[k-M:k][::-1]
         else:
             x_vec = np.pad(xn[:k][::-1], (0, M-k), 'constant')
 

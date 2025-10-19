@@ -9,24 +9,25 @@ from KAPA_Algorithm import kapa
 from KRLS_Algorithm import krls
 from EXKRLS_Algorithm import exkrls
 
+
 if __name__ == '__main__':
     fs = 1        # 采样频率
     f0 = 0.02     # 信号频率
     n = 1000      # 信号长度
     # 生成原始信号
     xs, t = SignalGenerator.generate_sine(f0, n)  # 正弦波
-    # xs, t = SignalGenerator.generate_square(f0, n)  # 方波
-    # xs, t = SignalGenerator.generate_triangle(f0, n)  # 三角波
+    #xs, t = SignalGenerator.generate_square(f0, n)  # 方波
+    #xs, t = SignalGenerator.generate_triangle(f0, n)  # 三角波
     
     # 使用高斯噪声
-    #ws = Noise.add_awgn_noise(xs, 20) 
+    ws = Noise.add_awgn_noise(xs, 20) 
     # # 使用椒盐噪声
     #ws = Noise().add_salt_pepper_noise(xs, noise_prob=0.1)  
     # 或使用均匀分布噪声
-    ws = Noise().add_uniform_noise(xs, amplitude=0.5)
+    #ws = Noise().add_uniform_noise(xs, amplitude=0.5)
 
     #lms 处理
-    #yn, W, en = lms(ws, xs, M = 20, mu = 0.001)
+    yn, W, en = lms(ws, xs, M = 20, mu = 0.001)
 
     # KLMS 处理
     # x = ws.reshape(-1, 1)   # 输入 (N,1)
@@ -47,10 +48,12 @@ if __name__ == '__main__':
     # yn, en, dict_x, alpha = krls(x, d, sigma=1.0, ald_threshold=1e-3, delta=1e-6)
 
     # EX-KRLS 处理
-    x = ws.reshape(-1, 1)   # 输入
-    d = xs                  # 期望
-    yn, en, dict_x, alpha = exkrls(x, d, sigma=1.0, delta=0.1, lam=0.99, ald_threshold=1e-2, max_dict_size=50)
-
+    # x = ws.reshape(-1, 1)   # 输入
+    # d = xs                  # 期望
+    # yn, en, dict_x, alpha = exkrls(x, d, sigma=1.0, delta=0.1, lam=0.99, ald_threshold=1e-2, max_dict_size=50)
     # 绘图
     p = Plotter()
     p.plot_signals(t, xs, ws, yn, en)
+
+
+    
